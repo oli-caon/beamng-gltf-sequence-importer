@@ -97,6 +97,7 @@ class ImportBeamNGglTFSequence(bpy.types.Operator, bpy_extras.io_utils.ImportHel
 
         sequence_collection = bpy.data.collections.new(name=f"{name} sequence")
         scene.collection.children.link(sequence_collection)
+        sequence_collection.hide_render = True
 
         prior_materials = set(bpy.data.materials.values())
         keep_materials = set()
@@ -162,7 +163,8 @@ class ImportBeamNGglTFSequence(bpy.types.Operator, bpy_extras.io_utils.ImportHel
                     m_new: m_og
                     for m_new in new_materials
                     for m_og in keep_materials
-                    if os.path.splitext(m_new.name)[0] == m_og.name
+                    if os.path.splitext(m_new.name)[0] == os.path.splitext(m_og.name)[0]
+                    # compare material names without duplicate suffix
                 }
                 image_dupes = {
                     i_new: i_og
