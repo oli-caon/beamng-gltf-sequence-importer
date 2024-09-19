@@ -1,0 +1,16 @@
+schema_version = "1.0.0"
+
+id = "beamng_gltf_sequence_importer"
+version = "0.1.0"
+name = "BeamNG glTF Sequence Importer"
+tagline = "Imports glTF sequences that were exported from BeamNG"
+maintainer = "Oli Caon <oli.caon@gmail.com>"
+type = "add-on"
+website = "https://github.com/oli-caon/beamng-gltf-sequence-importer"
+
+tags = ["Import-Export", "Animation"]
+blender_version_min = "4.2.0"
+license = ["SPDX:GPL-3.0-or-later"]
+
+[permissions]
+files = "Import glTF files and find textures in the specified directory"
