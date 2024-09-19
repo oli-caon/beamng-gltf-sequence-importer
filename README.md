@@ -6,7 +6,7 @@ This addon is intended for use with my BeamNG.drive mod [glTF Sequence Exporter]
 
 ## Installation
 
-Download this repository as a zip file and install it in the Blender preferences as an add-on.
+Download `beamng_gltf_sequence_importer-0.1.0.zip` the [latest release](https://github.com/oli-caon/beamng-gltf-sequence-importer/releases) and install it in the Blender preferences as an add-on.
 
 ## Usage
 
