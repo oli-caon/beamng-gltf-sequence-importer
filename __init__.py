@@ -14,6 +14,9 @@ def find_beamng_user_folder():
     else:
         return ""
 
+def _log(*args):
+    print("beamng_gltf_sequence.import:", *args)
+
 class ImportBeamNGglTFSequence(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
     """Import BeamNG glTF Sequence"""  # Use this as a tooltip for menu items and buttons.
 
@@ -184,8 +187,10 @@ class ImportBeamNGglTFSequence(bpy.types.Operator, bpy_extras.io_utils.ImportHel
                 keep_images |= new_images - image_dupes.keys()
 
             context.window_manager.progress_update(i + 1)
+            _log(f"Imported frame '{filename}' ({i+1} / {file_count}).")
 
         context.window_manager.progress_update(progress_steps - 0.5)
+        _log("Finished importing glTF files. Creating instancer object")
 
         context.view_layer.layer_collection.children[
             sequence_collection.name
@@ -207,10 +212,13 @@ class ImportBeamNGglTFSequence(bpy.types.Operator, bpy_extras.io_utils.ImportHel
         modifier["Socket_2"] = sequence_collection
 
         if self.find_textures:
-            bpy.ops.file.find_missing_files(directory=self.beamng_user_folder, filter_image=True)
+            _log(f"Searching for missing textures in '{self.beamng_user_folder}' ...")
+            result = bpy.ops.file.find_missing_files(directory=self.beamng_user_folder, filter_image=True)
+            _log(f"Finished searching. (returned {result})")
 
         context.window_manager.progress_end()
-        self.report({"INFO"}, f"Imported glTF sequence '{name}' ({file_count} frames).")
+        self.report({"INFO"}, f"Imported glTF sequence '{name}' ({file_count} frames)")
+        _log(f"Finished")
 
         return {'FINISHED'}
 

@@ -1,7 +1,7 @@
 schema_version = "1.0.0"
 
 id = "beamng_gltf_sequence_importer"
-version = "0.1.1"
+version = "0.1.2"
 name = "BeamNG glTF Sequence Importer"
 tagline = "Imports glTF sequences that were exported from BeamNG"
 maintainer = "Oli Caon <oli.caon@gmail.com>"
