@@ -7,7 +7,7 @@ from . import geo_nodes
 
 
 def find_beamng_user_folder():
-    path = r"~\AppData\Local\BeamNG.drive"
+    path = r"~\AppData\Local\BeamNG\BeamNG.drive\current"
     expanded_path = os.path.expanduser(path)
     if expanded_path != path:
         return expanded_path
@@ -98,6 +98,7 @@ class ImportBeamNGglTFSequence(bpy.types.Operator, bpy_extras.io_utils.ImportHel
         progress_steps = file_count + 1
         context.window_manager.progress_begin(0, progress_steps)
 
+        active_collection = context.collection
         sequence_collection = bpy.data.collections.new(name=f"{name} sequence")
         scene.collection.children.link(sequence_collection)
         sequence_collection.hide_render = True
@@ -110,7 +111,10 @@ class ImportBeamNGglTFSequence(bpy.types.Operator, bpy_extras.io_utils.ImportHel
         for i, filepath in enumerate(filepaths):
             filename = os.path.splitext(bpy.path.basename(filepath))[0]
 
-            bpy.ops.import_scene.gltf(filepath=filepath, import_pack_images=False)
+            bpy.ops.import_scene.gltf(
+                filepath=filepath,
+                import_pack_images=False,
+                )
             context.window_manager.progress_update(i + 0.5)
 
             if join_meshes:
@@ -133,13 +137,13 @@ class ImportBeamNGglTFSequence(bpy.types.Operator, bpy_extras.io_utils.ImportHel
                         bpy.data.objects.remove(o, do_unlink=True)
                         continue
                     sequence_collection.objects.link(o)
-                    scene.collection.objects.unlink(o)
+                    active_collection.objects.unlink(o)
                     if not mesh_active and o.type == "MESH":
                         context.view_layer.objects.active = o
                         mesh_active = True
                 else:
                     frame_collection.objects.link(o)
-                    scene.collection.objects.unlink(o)
+                    active_collection.objects.unlink(o)
 
             if join_meshes:
                 bpy.ops.object.join()
@@ -153,12 +157,10 @@ class ImportBeamNGglTFSequence(bpy.types.Operator, bpy_extras.io_utils.ImportHel
             # The rest of the loop checks for duplicate materials/images being imported
             # and merges them. Could be faster without the sets but it works for now.
             if i == 0:  # first frame
-                keep_materials = set(bpy.data.materials) - prior_materials
+                keep_materials = set(bpy.data.materials.values()) - prior_materials
                 keep_images = set(bpy.data.images.values()) - prior_images
             else:
-                new_materials = (
-                    set(bpy.data.materials.values()) - prior_materials - keep_materials
-                )
+                new_materials = set(bpy.data.materials.values()) - prior_materials - keep_materials
                 new_images = set(bpy.data.images.values()) - prior_images - keep_images
 
                 # map from duplicates to originals
@@ -176,15 +178,15 @@ class ImportBeamNGglTFSequence(bpy.types.Operator, bpy_extras.io_utils.ImportHel
                     if os.path.splitext(i_new.name)[0] == i_og.name
                 }
 
+                keep_materials |= new_materials - material_dupes.keys()
+                keep_images |= new_images - image_dupes.keys()
+
                 for m_new, m_og in material_dupes.items():
                     m_new.user_remap(m_og)
                     bpy.data.materials.remove(m_new)
                 for i_new, i_og in image_dupes.items():
                     i_new.user_remap(i_og)
                     bpy.data.images.remove(i_new)
-
-                keep_materials |= new_materials - material_dupes.keys()
-                keep_images |= new_images - image_dupes.keys()
 
             context.window_manager.progress_update(i + 1)
             _log(f"Imported frame '{filename}' ({i+1} / {file_count}).")
