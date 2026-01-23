@@ -6,7 +6,7 @@ This addon is intended for use with my BeamNG.drive mod [glTF Sequence Exporter]
 
 ## Installation
 
-This add-on is only supported for Blender 4.2.
+This add-on is supported for Blender 5.0+.
 
 Download the [latest release](https://github.com/oli-caon/beamng-gltf-sequence-importer/releases) and drag and drop the .zip file into Blender to install. You can also install the .zip file through the Blender preferences via "Get Extensions -> Install from Disk..." or "Add-ons -> Install from Disk...".
 
